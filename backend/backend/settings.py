@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-
+from django.contrib.auth import get_user_model
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
@@ -9,17 +9,19 @@ load_dotenv(BASE_DIR / ".env")
 SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-secret-key")
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = os.getenv(
+    "ALLOWED_HOSTS",
+    "127.0.0.1,localhost,chef-jq4v.onrender.com"
+).split(",")
 
 CSRF_TRUSTED_ORIGINS = [
     "https://chef-jq4v.onrender.com",
 ]
 
-# Render / Proxy fix
+# Render proxy fix
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 USE_X_FORWARDED_HOST = True
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+
 
 
 INSTALLED_APPS = [
@@ -129,3 +131,22 @@ SPOONACULAR_API_KEY = ''
 SPOONACULAR_BASE_URL = 'https://api.spoonacular.com'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# ---------- CREATE ADMIN AFTER DJANGO READY ----------
+if os.environ.get("RENDER"):
+    try:
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+
+        username = os.environ.get("DJANGO_ADMIN_USERNAME", "admin")
+        password = os.environ.get("DJANGO_ADMIN_PASSWORD", "admin123")
+        email = os.environ.get("DJANGO_ADMIN_EMAIL", "admin@example.com")
+
+        if not User.objects.filter(username=username).exists():
+            User.objects.create_superuser(username, email, password)
+            print("✅ Admin created on startup")
+        else:
+            print("ℹ️ Admin already exists")
+
+    except Exception as e:
+        print("Admin creation error:", e)
