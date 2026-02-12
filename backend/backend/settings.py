@@ -9,12 +9,18 @@ load_dotenv(BASE_DIR / ".env")
 SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-secret-key")
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
-# Render proxy fix
+CSRF_TRUSTED_ORIGINS = [
+    "https://chef-jq4v.onrender.com",
+]
+
+# Render / Proxy fix
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 USE_X_FORWARDED_HOST = True
- 
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -123,7 +129,3 @@ SPOONACULAR_API_KEY = ''
 SPOONACULAR_BASE_URL = 'https://api.spoonacular.com'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-CSRF_TRUSTED_ORIGINS = [
-    "https://chef-jq4v.onrender.com",
-    "https://*.onrender.com",
-]
