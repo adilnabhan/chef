@@ -1,13 +1,23 @@
-﻿import os
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = 'kuriouschef-secret-key-2024-production'
-DEBUG = True
-ALLOWED_HOSTS = ['*']
 
-# Use environment variable for OpenAI API key
-OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '')
+# Load .env file
+load_dotenv(BASE_DIR / ".env")
+
+# SECRET KEY from .env (safe)
+SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-secret-key")
+
+# DEBUG from .env (default True for local)
+DEBUG = os.getenv("DEBUG", "True") == "True"
+
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+
+# OpenAI key (optional)
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+ 
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -23,6 +33,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -31,6 +42,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -112,3 +124,5 @@ REST_FRAMEWORK = {
 # Spoonacular API
 SPOONACULAR_API_KEY = ''
 SPOONACULAR_BASE_URL = 'https://api.spoonacular.com'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
