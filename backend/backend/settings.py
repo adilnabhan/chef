@@ -3,20 +3,17 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Load .env file
 load_dotenv(BASE_DIR / ".env")
 
-# SECRET KEY from .env (safe)
+# SECURITY
 SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-secret-key")
-
-# DEBUG from .env (default True for local)
-DEBUG = os.getenv("DEBUG", "True") == "True"
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
-# OpenAI key (optional)
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+# Render proxy fix
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
  
 
 INSTALLED_APPS = [
@@ -126,3 +123,7 @@ SPOONACULAR_API_KEY = ''
 SPOONACULAR_BASE_URL = 'https://api.spoonacular.com'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+CSRF_TRUSTED_ORIGINS = [
+    "https://chef-jq4v.onrender.com",
+    "https://*.onrender.com",
+]
